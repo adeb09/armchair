@@ -32,6 +32,7 @@ WITH primary_key AS (
            ELSE ''
            END AS uc
          , succ
+         , zone
          , qtr
          , CASE
            WHEN qtr <= 2 THEN 1
@@ -94,6 +95,21 @@ WITH primary_key AS (
          , SUM(CASE WHEN sg = 'Y' AND succ = 'Y' THEN 1 ELSE 0 END) OVER (PARTITION BY gid, off ORDER BY pid) AS cum_sg_succ_plays
          , SUM(CASE WHEN sg = 'Y' AND succ = 'Y' THEN 1 ELSE 0 END) OVER (PARTITION BY gid, off, qtr ORDER BY pid) AS cum_sg_succ_plays_curr_qtr
          , SUM(CASE WHEN sg = 'Y' AND succ = 'Y' THEN 1 ELSE 0 END) OVER (PARTITION BY gid, off, half ORDER BY pid) AS cum_sg_succ_plays_curr_half
+         , SUM(CASE WHEN zone = 1 AND succ = 'Y' THEN 1 ELSE 0 END) OVER (PARTITION BY gid, off ORDER BY pid) AS cum_succ_plays_own_0_20
+         , SUM(CASE WHEN zone = 2 AND succ = 'Y' THEN 1 ELSE 0 END) OVER (PARTITION BY gid, off ORDER BY pid) AS cum_succ_plays_own_21_40
+         , SUM(CASE WHEN zone = 3 AND succ = 'Y' THEN 1 ELSE 0 END) OVER (PARTITION BY gid, off ORDER BY pid) AS cum_succ_plays_midfield
+         , SUM(CASE WHEN zone = 4 AND succ = 'Y' THEN 1 ELSE 0 END) OVER (PARTITION BY gid, off ORDER BY pid) AS cum_succ_plays_opp_21_40
+         , SUM(CASE WHEN zone = 5 AND succ = 'Y' THEN 1 ELSE 0 END) OVER (PARTITION BY gid, off ORDER BY pid) AS cum_succ_plays_redzone
+         , SUM(CASE WHEN zone = 1 AND succ = 'Y' THEN 1 ELSE 0 END) OVER (PARTITION BY gid, off, qtr ORDER BY pid) AS cum_succ_plays_own_0_20_curr_qtr
+         , SUM(CASE WHEN zone = 2 AND succ = 'Y' THEN 1 ELSE 0 END) OVER (PARTITION BY gid, off, qtr ORDER BY pid) AS cum_succ_plays_own_21_40_curr_qtr
+         , SUM(CASE WHEN zone = 3 AND succ = 'Y' THEN 1 ELSE 0 END) OVER (PARTITION BY gid, off, qtr ORDER BY pid) AS cum_succ_plays_midfield_curr_qtr
+         , SUM(CASE WHEN zone = 4 AND succ = 'Y' THEN 1 ELSE 0 END) OVER (PARTITION BY gid, off, qtr ORDER BY pid) AS cum_succ_plays_opp_21_40_curr_qtr
+         , SUM(CASE WHEN zone = 5 AND succ = 'Y' THEN 1 ELSE 0 END) OVER (PARTITION BY gid, off, qtr ORDER BY pid) AS cum_succ_plays_redzone_curr_qtr
+         , SUM(CASE WHEN zone = 1 AND succ = 'Y' THEN 1 ELSE 0 END) OVER (PARTITION BY gid, off, half ORDER BY pid) AS cum_succ_plays_own_0_20_curr_half
+         , SUM(CASE WHEN zone = 2 AND succ = 'Y' THEN 1 ELSE 0 END) OVER (PARTITION BY gid, off, half ORDER BY pid) AS cum_succ_plays_own_21_40_curr_half
+         , SUM(CASE WHEN zone = 3 AND succ = 'Y' THEN 1 ELSE 0 END) OVER (PARTITION BY gid, off, half ORDER BY pid) AS cum_succ_plays_midfield_curr_half
+         , SUM(CASE WHEN zone = 4 AND succ = 'Y' THEN 1 ELSE 0 END) OVER (PARTITION BY gid, off, half ORDER BY pid) AS cum_succ_plays_opp_21_40_curr_half
+         , SUM(CASE WHEN zone = 5 AND succ = 'Y' THEN 1 ELSE 0 END) OVER (PARTITION BY gid, off, half ORDER BY pid) AS cum_succ_plays_redzone_curr_half
     FROM rolling_stats
 )
 
@@ -134,5 +150,20 @@ SELECT pid
        , cum_sg_succ_plays
        , cum_sg_succ_plays_curr_qtr
        , cum_sg_succ_plays_curr_half
+       , cum_succ_plays_own_0_20
+       , cum_succ_plays_own_21_40
+       , cum_succ_plays_midfield
+       , cum_succ_plays_opp_21_40
+       , cum_succ_plays_redzone
+       , cum_succ_plays_own_0_20_curr_qtr
+       , cum_succ_plays_own_21_40_curr_qtr
+       , cum_succ_plays_midfield_curr_qtr
+       , cum_succ_plays_opp_21_40_curr_qtr
+       , cum_succ_plays_redzone_curr_qtr
+       , cum_succ_plays_own_0_20_curr_half
+       , cum_succ_plays_own_21_40_curr_half
+       , cum_succ_plays_midfield_curr_half
+       , cum_succ_plays_opp_21_40_curr_half
+       , cum_succ_plays_redzone_curr_half
   FROM sub
 ;
