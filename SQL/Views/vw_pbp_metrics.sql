@@ -88,6 +88,9 @@ WITH primary_key AS (
          , SUM(CASE WHEN uc = 'Y' AND succ = 'Y' THEN 1 ELSE 0 END) OVER (PARTITION BY gid, off ORDER BY pid) AS cum_uc_succ_plays
          , SUM(CASE WHEN uc = 'Y' AND succ = 'Y' THEN 1 ELSE 0 END) OVER (PARTITION BY gid, off, qtr ORDER BY pid) AS cum_uc_succ_plays_curr_qtr
          , SUM(CASE WHEN uc = 'Y' AND succ = 'Y' THEN 1 ELSE 0 END) OVER (PARTITION BY gid, off, half ORDER BY pid) AS cum_uc_succ_plays_curr_half
+         , SUM(CASE WHEN nh = 'Y' AND succ = 'Y' THEN 1 ELSE 0 END) OVER (PARTITION BY gid, off ORDER BY pid) AS cum_nh_succ_plays
+         , SUM(CASE WHEN nh = 'Y' AND succ = 'Y' THEN 1 ELSE 0 END) OVER (PARTITION BY gid, off, qtr ORDER BY pid) AS cum_nh_succ_plays_curr_qtr
+         , SUM(CASE WHEN nh = 'Y' AND succ = 'Y' THEN 1 ELSE 0 END) OVER (PARTITION BY gid, off, half ORDER BY pid) AS cum_nh_succ_plays_curr_half
     FROM rolling_stats
 )
 
@@ -122,5 +125,8 @@ SELECT pid
        , cum_uc_succ_plays
        , cum_uc_succ_plays_curr_qtr
        , cum_uc_succ_plays_curr_half
+       , cum_nh_succ_plays
+       , cum_nh_succ_plays_curr_qtr
+       , cum_nh_succ_plays_curr_half
   FROM sub
 ;
