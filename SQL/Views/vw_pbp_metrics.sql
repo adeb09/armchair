@@ -32,6 +32,7 @@ WITH primary_key AS (
          , SUM(CASE "type" WHEN 'PASS' THEN yds ELSE 0 END) OVER (PARTITION BY gid, off ORDER BY pid) AS cum_pass_yards
          , SUM(CASE "type" WHEN 'PASS' THEN 1 ELSE 0 END) OVER (PARTITION BY gid, off, qtr ORDER BY pid) AS cum_pass_attempts_curr_qtr
          , SUM(CASE "type" WHEN 'PASS' THEN yds ELSE 0 END) OVER (PARTITION BY gid, off, qtr ORDER BY pid) AS cum_pass_yards_curr_qtr
+         , SUM(CASE TRIM(succ) WHEN 'Y' THEN 1 ELSE 0 END) OVER (PARTITION BY gid, off ORDER BY pid) AS cum_succ_plays
     FROM pbp
 )
 
@@ -57,6 +58,7 @@ WITH primary_key AS (
          , ROUND(cum_pass_yards_curr_qtr * 1.0 / cum_pass_attempts_curr_qtr, 2) AS yards_per_pass_attempt_curr_qtr
          , SUM(CASE "type" WHEN 'PASS' THEN 1 ELSE 0 END) OVER (PARTITION BY gid, off, half ORDER BY pid) AS cum_pass_attempts_curr_half
          , SUM(CASE "type" WHEN 'PASS' THEN yds ELSE 0 END) OVER (PARTITION BY gid, off, half ORDER BY pid) AS cum_pass_yards_curr_half
+         , cum_succ_plays
     FROM rolling_stats
 )
 
@@ -79,6 +81,7 @@ SELECT pid
        , cum_pass_attempts_curr_half
        , cum_pass_yards_curr_half
        , ROUND(cum_pass_yards_curr_half * 1.0 / cum_pass_attempts_curr_half, 2) AS yards_per_pass_attempt_curr_half
+       , cum_succ_plays
   FROM sub
  ORDER BY pid
 ;
