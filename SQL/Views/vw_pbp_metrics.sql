@@ -1,7 +1,13 @@
-/* view that holds more play by play metrics; can be joined to any entity with pid 
+/* view that holds more play by play metrics; can be joined to any entity with pid
+pid = play ID
+gid = game ID
 cum = cumulative
 curr = current
 qtr = quarter
+succ = successful
+uc = under center
+sg = shotgun
+nh = no-huddle
 */
 DROP VIEW IF EXISTS vw_pbp_metrics
 ;
@@ -19,6 +25,12 @@ WITH primary_key AS (
          , def
          , "type"
          , yds
+         , nh
+         , sg
+         , CASE
+           WHEN NULLIF(sg, '') IS NULL THEN 'Y'
+           ELSE ''
+           END AS uc
          , succ
          , qtr
          , CASE
@@ -73,6 +85,7 @@ WITH primary_key AS (
          , cum_succ_pass_plays
          , cum_succ_pass_plays_curr_qtr
          , SUM(CASE WHEN succ = 'Y' AND "type" = 'PASS' THEN 1 ELSE 0 END) OVER (PARTITION BY gid, off, half ORDER BY pid) AS cum_succ_pass_plays_curr_half
+         , SUM(CASE WHEN uc = 'Y' AND succ = 'Y' THEN 1 ELSE 0 END) OVER (PARTITION BY gid, off ORDER BY pid) AS cum_uc_succ_plays
     FROM rolling_stats
 )
 
@@ -104,5 +117,6 @@ SELECT pid
        , cum_succ_pass_plays
        , cum_succ_pass_plays_curr_qtr
        , cum_succ_pass_plays_curr_half
+       , cum_uc_succ_plays
   FROM sub
 ;
