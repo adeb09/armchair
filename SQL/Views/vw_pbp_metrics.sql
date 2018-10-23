@@ -35,7 +35,9 @@ WITH primary_key AS (
          , SUM(CASE succ WHEN 'Y' THEN 1 ELSE 0 END) OVER (PARTITION BY gid, off ORDER BY pid) AS cum_succ_plays
          , SUM(CASE succ WHEN 'Y' THEN 1 ELSE 0 END) OVER (PARTITION BY gid, off, qtr ORDER BY pid) AS cum_succ_plays_curr_qtr
          , SUM(CASE WHEN succ = 'Y' AND "type" = 'RUSH' THEN 1 ELSE 0 END) OVER (PARTITION BY gid, off ORDER BY pid) AS cum_succ_run_plays
+         , SUM(CASE WHEN succ = 'Y' AND "type" = 'RUSH' THEN 1 ELSE 0 END) OVER (PARTITION BY gid, off, qtr ORDER BY pid) AS cum_succ_run_plays_curr_qtr
          , SUM(CASE WHEN succ = 'Y' AND "type" = 'PASS' THEN 1 ELSE 0 END) OVER (PARTITION BY gid, off ORDER BY pid) AS cum_succ_pass_plays
+         , SUM(CASE WHEN succ = 'Y' AND "type" = 'PASS' THEN 1 ELSE 0 END) OVER (PARTITION BY gid, off, qtr ORDER BY pid) AS cum_succ_pass_plays_curr_qtr
     FROM pbp
 )
 
@@ -64,7 +66,9 @@ WITH primary_key AS (
          , cum_succ_plays
          , cum_succ_plays_curr_qtr
          , cum_succ_run_plays
+         , cum_succ_run_plays_curr_qtr
          , cum_succ_pass_plays
+         , cum_succ_pass_plays_curr_qtr
     FROM rolling_stats
 )
 
@@ -90,7 +94,9 @@ SELECT pid
        , cum_succ_plays
        , cum_succ_plays_curr_qtr
        , cum_succ_run_plays
+       , cum_succ_run_plays_curr_qtr
        , cum_succ_pass_plays
+       , cum_succ_pass_plays_curr_qtr
   FROM sub
  ORDER BY pid
 ;
